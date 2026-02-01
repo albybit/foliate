@@ -1,0 +1,14 @@
+{
+  "name": "foliate-reading-party-server",
+  "version": "1.0.0",
+  "description": "Reading Party server for Foliate e-book reader",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "express": "^4.21.0",
+    "uuid": "^10.0.0",
+    "ws": "^8.18.0"
+  }
+}

@@ -21,6 +21,7 @@ import { ImageViewer } from './image-viewer.js'
 import { formatLanguageMap, formatAuthors, makeBookInfoWindow } from './book-info.js'
 import { themes, invertTheme, themeCssProvider } from './themes.js'
 import { dataStore } from './data.js'
+import './reading-party.js'
 
 // for use in the WebView
 const uiText = {
@@ -536,6 +537,7 @@ export const BookViewer = GObject.registerClass({
         'annotation-stack', 'annotation-view', 'annotation-search-entry',
         'bookmark-stack', 'bookmark-view',
         'book-info', 'book-cover', 'book-title', 'book-author',
+        'reading-party-panel',
     ],
 }, class extends Gtk.Overlay {
     #file
@@ -687,6 +689,25 @@ export const BookViewer = GObject.registerClass({
         this._navbar.connect('go-to-section', (_, x) => this._view.goTo(x))
         this._navbar.connect('go-to-fraction', (_, x) => this._view.goToFraction(x))
 
+        // reading party
+        this._reading_party_panel.connect('go-to-cfi', (_, cfi) => {
+            this._view.goTo(cfi)
+            if (this._flap.collapsed) this._flap.show_sidebar = false
+        })
+        const partyClient = this._reading_party_panel.client
+        partyClient.connect('annotation-received', (_, msg) => {
+            const ann = msg.annotation
+            if (ann?.value) this._view.addAnnotation({
+                value: ann.value,
+                color: ann.color || 'aqua',
+                text: ann.text,
+                note: `[${ann.nickname}] ${ann.note || ''}`.trim(),
+            })
+        })
+        partyClient.connect('annotation-deleted', (_, msg) => {
+            if (msg?.annotationId) this._view.deleteAnnotation({ value: msg.annotationId })
+        })
+
         // annotations
         utils.connect(this._bookmark_view, {
             'notify::has-items': view => this._bookmark_stack
@@ -749,6 +770,7 @@ export const BookViewer = GObject.registerClass({
             actions: [
                 'toggle-sidebar', 'toggle-search', 'show-location',
                 'toggle-toc', 'toggle-annotations', 'toggle-bookmarks',
+                'toggle-party',
                 'preferences', 'show-info', 'bookmark',
                 'export-annotations', 'import-annotations',
             ],
@@ -764,6 +786,7 @@ export const BookViewer = GObject.registerClass({
             '<ctrl>i|<alt>Return': 'viewer.show-info',
             '<ctrl>t': 'viewer.toggle-toc',
             '<ctrl><alt>a': 'viewer.toggle-annotations',
+            '<ctrl><alt>p': 'viewer.toggle-party',
             '<ctrl><alt>d': 'viewer.toggle-bookmarks',
             '<ctrl>d': 'viewer.bookmark',
             '<alt>comma': 'viewer.preferences',
@@ -843,6 +866,8 @@ export const BookViewer = GObject.registerClass({
 
         book.metadata.identifier ||= makeIdentifier(this.#file)
         const { identifier } = book.metadata
+        // Set book ID for reading party
+        this._reading_party_panel.bookId = identifier
         if (identifier) {
             this.#data = await dataStore.get(identifier, this._view)
             const { annotations, bookmarks } = this.#data
@@ -876,9 +901,20 @@ export const BookViewer = GObject.registerClass({
             this.#data.storage.set('progress', [location.current, location.total])
             this.#data.storage.set('lastLocation', cfi)
         }
+        // Send progress to reading party
+        const partyClient = this._reading_party_panel.client
+        if (partyClient?.isConnected && this._reading_party_panel.bookId) {
+            const fraction = location.total > 0 ? location.current / location.total : 0
+            partyClient.sendProgress(this._reading_party_panel.bookId, cfi, fraction)
+        }
     }
     #deleteAnnotation(annotation) {
         this.#data.deleteAnnotation(annotation)
+        // Sync delete to reading party
+        const pc = this._reading_party_panel.client
+        if (pc?.isConnected && this._reading_party_panel.bookId) {
+            pc.deleteAnnotation(this._reading_party_panel.bookId, annotation.value)
+        }
         this.root.add_toast(utils.connect(new Adw.Toast({
             title: _('Annotation deleted'),
             button_label: _('Undo'),
@@ -907,16 +943,19 @@ export const BookViewer = GObject.registerClass({
                 'highlight': () => {
                     resolved = true
                     const annotation = this.#data.annotations.get(value)
-                    // NOTE: `content` is the `Range.toString()`
-                    // whereas `text` is the `Selection.toString()`;
-                    // not sure which would be better for this use case,
-                    // but my understanding is that a `TextQuoteSelector` is
-                    // expected to be the text itself, not the rendered result
-                    this.#data.addAnnotation(annotation ?? {
+                    const annData = annotation ?? {
                         value, text: content,
                         color: this.highlight_color,
                         created: new Date().toISOString(),
-                    }).then(() => resolve('highlight'))
+                    }
+                    this.#data.addAnnotation(annData).then(() => {
+                        // Sync annotation to reading party
+                        const pc = this._reading_party_panel.client
+                        if (pc?.isConnected && this._reading_party_panel.bookId) {
+                            pc.sendAnnotation(this._reading_party_panel.bookId, annData)
+                        }
+                        resolve('highlight')
+                    })
                 },
                 'search': () => {
                     this._search_entry.text = content
@@ -1040,6 +1079,7 @@ export const BookViewer = GObject.registerClass({
     toggleToc() { this.#toggleSidebarContent('toc') }
     toggleAnnotations() { this.#toggleSidebarContent('annotations') }
     toggleBookmarks() { this.#toggleSidebarContent('bookmarks') }
+    toggleParty() { this.#toggleSidebarContent('party') }
     toggleSearch() {
         const bar = this._search_bar
         if (this._search_entry.has_focus)
@@ -1073,6 +1113,7 @@ export const BookViewer = GObject.registerClass({
         importAnnotations(this.root, this.#data)
     }
     vfunc_unroot() {
+        this._reading_party_panel.destroy()
         this._navbar.tts_box.kill()
         this._view.viewSettings.unbindSettings()
         this._view.fontSettings.unbindSettings()

@@ -472,6 +472,16 @@
                                   </property>
                                 </object>
                               </child>
+                              <child>
+                                <object class="AdwViewStackPage">
+                                  <property name="name">party</property>
+                                  <property name="title" translatable="yes">Reading Party</property>
+                                  <property name="icon-name">system-users-symbolic</property>
+                                  <property name="child">
+                                    <object class="FoliateReadingPartyPanel" id="reading-party-panel"/>
+                                  </property>
+                                </object>
+                              </child>
                             </object>
                           </child>
                         </object>

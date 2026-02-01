@@ -16,6 +16,7 @@
     <file>themes.js</file>
     <file>toc.js</file>
     <file>tts.js</file>
+    <file>reading-party.js</file>
     <file>utils.js</file>
     <file>webview.js</file>
     <file>ui/annotation-popover.ui</file>
@@ -25,6 +26,7 @@
     <file>ui/book-row.ui</file>
     <file>ui/book-viewer.ui</file>
     <file>ui/bookmark-row.ui</file>
+    <file>ui/reading-party.ui</file>
     <file>ui/export-dialog.ui</file>
     <file>ui/image-viewer.ui</file>
     <file>ui/import-dialog.ui</file>

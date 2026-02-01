@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?><interface>
+<template class="FoliateReadingPartyPanel" parent="GtkBox">
+  <property name="orientation">vertical</property>
+  <property name="vexpand">True</property>
+  <child>
+    <object class="GtkStack" id="party-stack">
+      <property name="vexpand">True</property>
+      <child>
+        <object class="GtkStackPage">
+          <property name="name">empty</property>
+          <property name="child">
+            <object class="AdwStatusPage">
+              <property name="vexpand">true</property>
+              <property name="icon-name">system-users-symbolic</property>
+              <property name="title" translatable="yes">No Reading Party</property>
+              <property name="description" translatable="yes">Create or join a reading party to share progress and annotations with friends</property>
+              <style><class name="compact"/></style>
+              <child>
+                <object class="GtkBox">
+                  <property name="orientation">vertical</property>
+                  <property name="spacing">12</property>
+                  <property name="halign">center</property>
+                  <child>
+                    <object class="GtkButton" id="create-button">
+                      <property name="label" translatable="yes">Create Party</property>
+                      <style><class name="suggested-action"/><class name="pill"/></style>
+                    </object>
+                  </child>
+                  <child>
+                    <object class="GtkButton" id="join-button">
+                      <property name="label" translatable="yes">Join Party</property>
+                      <style><class name="pill"/></style>
+                    </object>
+                  </child>
+                </object>
+              </child>
+            </object>
+          </property>
+        </object>
+      </child>
+      <child>
+        <object class="GtkStackPage">
+          <property name="name">connecting</property>
+          <property name="child">
+            <object class="GtkBox">
+              <property name="orientation">vertical</property>
+              <property name="valign">center</property>
+              <property name="spacing">12</property>
+              <child>
+                <object class="AdwSpinner">
+                  <property name="halign">center</property>
+                </object>
+              </child>
+              <child>
+                <object class="GtkLabel">
+                  <property name="label" translatable="yes">Connecting...</property>
+                  <style><class name="dim-label"/></style>
+                </object>
+              </child>
+            </object>
+          </property>
+        </object>
+      </child>
+      <child>
+        <object class="GtkStackPage">
+          <property name="name">connected</property>
+          <property name="child">
+            <object class="GtkBox">
+              <property name="orientation">vertical</property>
+              <property name="vexpand">True</property>
+              <child>
+                <object class="GtkBox">
+                  <property name="orientation">vertical</property>
+                  <property name="margin-start">12</property>
+                  <property name="margin-end">12</property>
+                  <property name="margin-top">6</property>
+                  <property name="margin-bottom">6</property>
+                  <property name="spacing">6</property>
+                  <child>
+                    <object class="GtkLabel" id="party-name-label">
+                      <property name="xalign">0</property>
+                      <property name="ellipsize">end</property>
+                      <style><class name="heading"/></style>
+                    </object>
+                  </child>
+                  <child>
+                    <object class="GtkBox">
+                      <property name="spacing">6</property>
+                      <child>
+                        <object class="GtkLabel">
+                          <property name="label" translatable="yes">Invite Code:</property>
+                          <style><class name="dim-label"/></style>
+                        </object>
+                      </child>
+                      <child>
+                        <object class="GtkLabel" id="invite-code-label">
+                          <property name="selectable">True</property>
+                          <property name="hexpand">True</property>
+                          <property name="xalign">0</property>
+                          <style><class name="monospace"/></style>
+                        </object>
+                      </child>
+                      <child>
+                        <object class="GtkButton" id="copy-code-button">
+                          <property name="icon-name">edit-copy-symbolic</property>
+                          <property name="tooltip-text" translatable="yes">Copy Invite Code</property>
+                          <style><class name="flat"/><class name="circular"/></style>
+                        </object>
+                      </child>
+                    </object>
+                  </child>
+                </object>
+              </child>
+              <child>
+                <object class="GtkSeparator"/>
+              </child>
+              <child>
+                <object class="GtkLabel">
+                  <property name="label" translatable="yes">Members</property>
+                  <property name="xalign">0</property>
+                  <property name="margin-start">12</property>
+                  <property name="margin-top">6</property>
+                  <property name="margin-bottom">3</property>
+                  <style><class name="caption"/><class name="dim-label"/></style>
+                </object>
+              </child>
+              <child>
+                <object class="GtkScrolledWindow" id="members-scroll">
+                  <property name="vexpand">True</property>
+                  <child>
+                    <object class="GtkListBox" id="members-list">
+                      <property name="selection-mode">none</property>
+                      <style><class name="navigation-sidebar"/></style>
+                    </object>
+                  </child>
+                </object>
+              </child>
+              <child>
+                <object class="GtkSeparator"/>
+              </child>
+              <child>
+                <object class="GtkLabel">
+                  <property name="label" translatable="yes">Comments</property>
+                  <property name="xalign">0</property>
+                  <property name="margin-start">12</property>
+                  <property name="margin-top">6</property>
+                  <property name="margin-bottom">3</property>
+                  <style><class name="caption"/><class name="dim-label"/></style>
+                </object>
+              </child>
+              <child>
+                <object class="GtkScrolledWindow" id="comments-scroll">
+                  <property name="vexpand">True</property>
+                  <child>
+                    <object class="GtkListBox" id="comments-list">
+                      <property name="selection-mode">none</property>
+                      <style><class name="navigation-sidebar"/></style>
+                    </object>
+                  </child>
+                </object>
+              </child>
+              <child>
+                <object class="GtkSeparator"/>
+              </child>
+              <child>
+                <object class="GtkBox">
+                  <property name="spacing">6</property>
+                  <property name="margin-start">6</property>
+                  <property name="margin-end">6</property>
+                  <property name="margin-top">6</property>
+                  <property name="margin-bottom">6</property>
+                  <child>
+                    <object class="GtkEntry" id="comment-entry">
+                      <property name="hexpand">True</property>
+                      <property name="placeholder-text" translatable="yes">Write a comment...</property>
+                    </object>
+                  </child>
+                  <child>
+                    <object class="GtkButton" id="send-comment-button">
+                      <property name="icon-name">mail-send-symbolic</property>
+                      <property name="tooltip-text" translatable="yes">Send Comment</property>
+                      <style><class name="suggested-action"/></style>
+                    </object>
+                  </child>
+                </object>
+              </child>
+              <child>
+                <object class="GtkBox">
+                  <property name="halign">center</property>
+                  <property name="margin-top">3</property>
+                  <property name="margin-bottom">6</property>
+                  <child>
+                    <object class="GtkButton" id="leave-button">
+                      <property name="label" translatable="yes">Leave Party</property>
+                      <style><class name="destructive-action"/><class name="pill"/></style>
+                    </object>
+                  </child>
+                </object>
+              </child>
+            </object>
+          </property>
+        </object>
+      </child>
+    </object>
+  </child>
+</template>
+</interface>

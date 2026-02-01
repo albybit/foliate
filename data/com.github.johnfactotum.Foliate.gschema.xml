@@ -42,6 +42,7 @@
     path="/com/github/johnfactotum/Foliate/viewer/">
     <child schema="com.github.johnfactotum.Foliate.viewer.view" name="view"/>
     <child schema="com.github.johnfactotum.Foliate.viewer.font" name="font"/>
+    <child schema="com.github.johnfactotum.Foliate.reading-party" name="reading-party"/>
     <key name="fold-sidebar" type="b">
       <default>false</default>
     </key>
@@ -139,6 +140,25 @@
     </key>
     <key name="minimum-size" type="u">
       <default>0</default>
+    </key>
+  </schema>
+
+  <schema id="com.github.johnfactotum.Foliate.reading-party"
+    path="/com/github/johnfactotum/Foliate/viewer/reading-party/">
+    <key name="server-url" type="s">
+      <default>'http://localhost:3000'</default>
+    </key>
+    <key name="nickname" type="s">
+      <default>''</default>
+    </key>
+    <key name="member-id" type="s">
+      <default>''</default>
+    </key>
+    <key name="party-id" type="s">
+      <default>''</default>
+    </key>
+    <key name="auto-connect" type="b">
+      <default>false</default>
     </key>
   </schema>
 </schemalist>
